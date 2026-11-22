@@ -1,10 +1,11 @@
 import { Router } from "express";
-import type { Request, Response , NextFunction } from "express";
+import type { Request, Response } from "express";
 import { z } from "zod";
 import { createLink, getLink } from "../services/links.js";
 
 export const createLinkSchema = z.object({
-  url: z.url(),
+  // Only http/https: a redirector must not send users to javascript:, ftp:, etc.
+  url: z.url({ protocol: /^https?$/ }),
 });
 
 export const codeParamSchema = z.object({

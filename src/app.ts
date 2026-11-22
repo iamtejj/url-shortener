@@ -3,6 +3,8 @@ import type { Request, Response } from "express";
 import linksRouter from "./routes/links.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { NotFoundError } from "./errors.js";
+import { findLinkByCode } from "./repositories/links.js";
+import { string } from "zod";
 
 const app = express();
 app.use(express.json());
@@ -12,6 +14,15 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 
 app.use("/links", linksRouter);
+
+app.get("/:code", async (req: Request, res: Response) => {
+  const { code } = req.params;
+  const link = await findLinkByCode(String(code));
+  if (!link) {
+    throw new NotFoundError("Link not found");
+  }
+  res.redirect(302, link.originalUrl);
+});
 
 app.get("/slow", (_req, res) => setTimeout(() => res.send("done"), 5000));
 
