@@ -13,6 +13,12 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       error: { code: err.code, message: err.message, details: err.details },
     });
   }
+  // express.json() failed to parse the body (empty or malformed JSON)
+  if (err instanceof SyntaxError && (err as { type?: string }).type === "entity.parse.failed") {
+    return res.status(400).json({
+      error: { code: "INVALID_JSON", message: "Request body is not valid JSON" },
+    });
+  }
   console.error(err); // real logging comes on Day 10
   res.status(500).json({ error: { code: "INTERNAL", message: "Something went wrong" } });
 };

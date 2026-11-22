@@ -1,22 +1,34 @@
-import app from "../app.js";
-import zod from "zod";
+import { Router } from "express";
+import type { Request, Response , NextFunction } from "express";
+import { z } from "zod";
+import { createLink, getLink } from "../services/links.js";
 
-const linkSchema = zod.object({
-    url: zod.string().url()
-})
+export const createLinkSchema = z.object({
+  url: z.url(),
+});
 
-const linkStore = new Map();
-app.post("/links", (req, res) => {
-    const body = req.body;
-    try {
-        linkSchema.parse(body);
-        const url = linkSchema.parse(body).url;
-        return {
-            shortUrl: "http://localhost:3000/abc123"
-        }
-    }
-    catch (e) {
-        return Error("Invalid URL");
-    }
-    
-})
+export const codeParamSchema = z.object({
+  code: z.string().min(1).max(32),
+});
+
+const router = Router();
+
+// POST /links  -> create a short link (dummy response for now)
+// router.get("/", async (_req:Request, res:Response, next: NextFunction) => {
+//     res.json({ message: "Hello from /links" });
+// });
+router.post("/", async (req: Request, res: Response) => {
+  // Throws ZodError on bad input; Express 5 forwards it to errorHandler (400).
+  const { url } = createLinkSchema.parse(req.body);
+  const link = await createLink(url);
+  res.status(201).json(link);
+});
+
+// GET /links/:code  -> look up a short link (dummy response for now)
+router.get("/:code", async (req: Request, res: Response) => {
+  const { code } = codeParamSchema.parse(req.params);
+  const link = await getLink(code);
+  res.json(link);
+});
+
+export default router;
