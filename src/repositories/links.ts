@@ -7,7 +7,7 @@ export interface LinkRecord {
   createdAt: Date;
 }
 
-export const store = new Map<string, LinkRecord>();
+const store = new Map<string, LinkRecord>();
 
 export async function saveLink(record: LinkRecord): Promise<LinkRecord> {
   store.set(record.code, record);

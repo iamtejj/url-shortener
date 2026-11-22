@@ -1,9 +1,8 @@
 // Business logic lives here. Routes call services; services call repositories.
-// Everything below returns dummy data until the repository is implemented.
 
 import { randomBytes } from "crypto";
 import { findLinkByCode, saveLink } from "../repositories/links.js";
-import { AppError } from "../errors.js";
+import { AppError, NotFoundError } from "../errors.js";
 export interface LinkDto {
   code: string;
   shortUrl: string;
@@ -32,6 +31,12 @@ async function generateUniqueCode(): Promise<string> {
 }
 
 export async function getLink(code: string): Promise<LinkDto> {
-  // TODO: load via repository and throw NotFoundError when missing
-  return { code, shortUrl: `${BASE_URL}/${code}`, originalUrl: "https://example.com" };
+  const record = await findLinkByCode(code);
+  if (!record) throw new NotFoundError(`Link '${code}' not found`);
+  return { code: record.code, shortUrl: `${BASE_URL}/${record.code}`, originalUrl: record.originalUrl };
+}
+
+
+export async function resolveLink(code: string): Promise<string | null> {
+  return (await findLinkByCode(code))?.originalUrl ?? null;
 }

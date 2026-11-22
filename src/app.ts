@@ -4,7 +4,6 @@ import linksRouter from "./routes/links.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { NotFoundError } from "./errors.js";
 import { findLinkByCode } from "./repositories/links.js";
-import { string } from "zod";
 
 const app = express();
 app.use(express.json());
@@ -24,7 +23,9 @@ app.get("/:code", async (req: Request, res: Response) => {
   res.redirect(302, link.originalUrl);
 });
 
-app.get("/slow", (_req, res) => setTimeout(() => res.send("done"), 5000));
+app.use('/redirect',(req: Request, res: Response) => {
+  
+});
 
 // Unknown routes -> 404 through the error handler
 app.use((_req: Request, _res: Response) => {
