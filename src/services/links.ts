@@ -37,6 +37,8 @@ export async function getLink(code: string): Promise<LinkDto> {
 }
 
 
-export async function resolveLink(code: string): Promise<string | null> {
-  return (await findLinkByCode(code))?.originalUrl ?? null;
+export async function resolveLink(code: string): Promise<string> {
+  const record = await findLinkByCode(code);
+  if (!record) throw new NotFoundError(`Link '${code}' not found`);
+  return record.originalUrl;
 }

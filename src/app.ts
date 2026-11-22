@@ -1,9 +1,9 @@
 import express from "express";
 import type { Request, Response } from "express";
 import linksRouter from "./routes/links.js";
+import redirectRouter from "./routes/redirect.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { NotFoundError } from "./errors.js";
-import { findLinkByCode } from "./repositories/links.js";
 
 const app = express();
 app.use(express.json());
@@ -14,18 +14,8 @@ app.get("/health", (_req: Request, res: Response) => {
 
 app.use("/links", linksRouter);
 
-app.get("/:code", async (req: Request, res: Response) => {
-  const { code } = req.params;
-  const link = await findLinkByCode(String(code));
-  if (!link) {
-    throw new NotFoundError("Link not found");
-  }
-  res.redirect(302, link.originalUrl);
-});
-
-app.use('/redirect',(req: Request, res: Response) => {
-  
-});
+// Short URLs are served from the root: GET /:code. Must come after /health and /links.
+app.use(redirectRouter);
 
 // Unknown routes -> 404 through the error handler
 app.use((_req: Request, _res: Response) => {
