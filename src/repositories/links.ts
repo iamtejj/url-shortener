@@ -8,7 +8,6 @@ export interface LinkRecord {
   createdAt: Date;
 }
 
-await pool.query('CREATE TABLE IF NOT EXISTS links (code TEXT PRIMARY KEY, original_url TEXT NOT NULL, created_at TIMESTAMP NOT NULL)');
 export async function saveLink(record: LinkRecord): Promise<LinkRecord> {
   await pool.query(
     "INSERT INTO links (code, original_url, created_at) VALUES ($1, $2, $3)",

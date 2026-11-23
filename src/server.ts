@@ -10,7 +10,11 @@ function shutdown(signal: string) {
 
   server.close(async (err) => {
     // runs when every connection has ended
-    await pool.end (); // close the database connection pool
+    try {
+      await pool.end();
+    } catch (error) {
+      console.error("Error occurred while closing database connection pool:", error);
+    }
     process.exit(err ? 1 : 0);
   });
 
