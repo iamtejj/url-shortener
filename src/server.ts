@@ -1,5 +1,5 @@
 import app from "./app.js";
-
+import { pool } from './db.js'
 
 const server = app.listen(3000, () => {
     console.log("App is listening on port 3000"); 
@@ -8,8 +8,9 @@ const server = app.listen(3000, () => {
 function shutdown(signal: string) {
   console.log(`${signal} received, shutting down`);
 
-  server.close((err) => {
+  server.close(async (err) => {
     // runs when every connection has ended
+    await pool.end (); // close the database connection pool
     process.exit(err ? 1 : 0);
   });
 
