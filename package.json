@@ -8,7 +8,9 @@
     "dev": "tsx watch --env-file=.env src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "migrate":"tsx --env-file=.env src/db/migrate.ts",
+    "race-demo": "tsx --env-file=.env src/db/race-demo.ts"
   },
   "keywords": [],
   "author": "",
