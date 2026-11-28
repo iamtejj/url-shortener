@@ -14,6 +14,7 @@ export class NotFoundError extends AppError {
     super(404, "NOT_FOUND", message);
   }
 }
+
 // Thrown by the repository when a code already exists (Postgres error 23505).
 // Not an HTTP error: the service decides what to do about it (retry).
 export class DuplicateCodeError extends Error {

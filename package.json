@@ -9,8 +9,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "migrate":"tsx --env-file=.env src/db/migrate.ts",
-    "race-demo": "tsx --env-file=.env src/db/race-demo.ts"
+    "migrate": "tsx --env-file=.env src/db/migrate.ts",
+    "race-demo": "tsx --env-file=.env src/db/race-demo.ts",
+    "cache-demo": "tsx --env-file=.env src/cache/demo.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
   "dependencies": {
     "express": "^5.3.0",
     "pg": "^8.23.1",
+    "redis": "^6.4.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { findLinkByCode, saveLink } from "../repositories/links.js";
 import { AppError, NotFoundError, DuplicateCodeError } from "../errors.js";
+import { cacheNotFound, cacheUrl, getCachedUrl } from "../cache/links.js";
 export interface LinkDto {
   code: string;
   shortUrl: string;
@@ -44,8 +45,19 @@ export async function getLink(code: string): Promise<LinkDto> {
 }
 
 
+// Cache-aside: look in Redis first; on a miss ask Postgres, then fill the cache.
 export async function resolveLink(code: string): Promise<string> {
-  const record = await findLinkByCode(code);
-  if (!record) throw new NotFoundError(`Link '${code}' not found`);
+  const cached = await getCachedUrl(code);
+  if (cached.hit) {
+    if (cached.url === null) throw new NotFoundError(`Link '${code}' not found`);
+    return cached.url; // cache hit: Postgres is never touched
+  }
+
+  const record = await findLinkByCode(code); // cache miss
+  if (!record) {
+    await cacheNotFound(code);
+    throw new NotFoundError(`Link '${code}' not found`);
+  }
+  await cacheUrl(code, record.originalUrl);
   return record.originalUrl;
 }
